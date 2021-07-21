@@ -14,9 +14,7 @@ import {
   Text
 } from '@chakra-ui/react'
 import { RiAddLine, RiPencilLine } from 'react-icons/ri'
-
-import { Header } from '../../components/Header'
-import { Sidebar } from '../../components/Sidebar'
+import { Header, Sidebar } from 'components'
 
 export default function UserList() {
   return (

@@ -28,11 +28,14 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "import/order": ["error", { "newlines-between": "always" }],
     "space-before-function-paren": "off",
     "react/prop-types": "off",
     "generator-star-spacing": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/camelcase": "off"
   }
 }
