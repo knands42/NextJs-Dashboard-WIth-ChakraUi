@@ -1,15 +1,16 @@
 import { AppProps } from 'next/app'
-import { ChakraProvider } from '@chakra-ui/react'
+import { makeServer } from 'services/miraje'
 
-import { theme } from '../styles/theme'
 import { Context } from '../contexts'
+
+if (process.env.NODE_ENV === 'development') {
+  makeServer()
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Context>
-      <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
-      </ChakraProvider>
+      <Component {...pageProps} />
     </Context>
   )
 }

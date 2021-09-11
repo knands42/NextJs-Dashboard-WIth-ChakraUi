@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import {
   Box,
   Flex,
@@ -10,33 +11,44 @@ import {
   Button
 } from '@chakra-ui/react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from 'react-query'
 import { Header, Sidebar, Input } from 'components'
+import { api } from 'services/api'
+import { queryClient } from 'services/queryClient'
 
-type CreateUserFormData = {
-  email: string
-  password: string
-}
-
-const createUserFormSchema = yup.object().shape({
-  name: yup.string().required(),
-  email: yup.string().required().email(),
-  password: yup.string().required().min(8),
-  password_confirmation: yup.string().oneOf([null, yup.ref('password')])
-})
+import { createUserFormSchema } from './_validations'
+import { CreateUserFormData } from './_types'
 
 export default function CreateUser() {
+  const router = useRouter()
+  const createUser = useMutation(
+    async (user: CreateUserFormData) => {
+      const response = await api.post('users', {
+        user: {
+          ...user,
+          created_at: new Date()
+        }
+      })
+
+      return response.data.user
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('users')
+      }
+    }
+  )
+
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(createUserFormSchema)
   })
   const { errors } = formState
 
-  const handleCreateUser: SubmitHandler<CreateUserFormData> = async (
-    values,
-    event
-  ) => {
-    console.log(values)
+  const handleCreateUser: SubmitHandler<CreateUserFormData> = async values => {
+    await createUser.mutateAsync(values)
+
+    router.push('/users')
   }
 
   return (
@@ -81,6 +93,7 @@ export default function CreateUser() {
               <Input
                 name="password"
                 label="Password"
+                type="password"
                 error={errors.password}
                 {...register('password')}
               />
@@ -101,7 +114,11 @@ export default function CreateUser() {
                   Cancel
                 </Button>
               </Link>
-              <Button colorScheme="pink" isLoading={formState.isSubmitting}>
+              <Button
+                colorScheme="pink"
+                isLoading={formState.isSubmitting}
+                type="submit"
+              >
                 Save
               </Button>
             </HStack>
